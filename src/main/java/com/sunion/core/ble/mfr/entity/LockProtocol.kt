@@ -145,6 +145,16 @@ sealed class LockConfig {
     ): LockConfig()
 }
 
+val LockConfig.versionString: String
+    get() = when (this) {
+        is LockConfig.Twelve -> {
+            val minor = subVersion / 10
+            val patch = subVersion % 10
+            "$mainVersion.$minor.$patch"
+        }
+        else -> "Unknown"
+    }
+
 sealed class Data {
     data class Thirty(
         val target: Int,
