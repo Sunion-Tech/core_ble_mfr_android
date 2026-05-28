@@ -1,17 +1,54 @@
 package com.sunion.core.ble.mfr
 
 import android.annotation.SuppressLint
-import com.sunion.core.ble.mfr.entity.*
+import com.sunion.core.ble.mfr.entity.Ability
+import com.sunion.core.ble.mfr.entity.Alert
+import com.sunion.core.ble.mfr.entity.AlertType
+import com.sunion.core.ble.mfr.entity.AutoLock
+import com.sunion.core.ble.mfr.entity.AutoLockTime
+import com.sunion.core.ble.mfr.entity.AutoLockTimeLowerLimit
+import com.sunion.core.ble.mfr.entity.AutoLockTimeUpperLimit
+import com.sunion.core.ble.mfr.entity.BatteryState
+import com.sunion.core.ble.mfr.entity.BlackListDetail
+import com.sunion.core.ble.mfr.entity.Credential
+import com.sunion.core.ble.mfr.entity.CredentialType
+import com.sunion.core.ble.mfr.entity.Data
+import com.sunion.core.ble.mfr.entity.DeadBolt
+import com.sunion.core.ble.mfr.entity.DeviceStatus
+import com.sunion.core.ble.mfr.entity.DeviceToken
+import com.sunion.core.ble.mfr.entity.Direction
+import com.sunion.core.ble.mfr.entity.DoorState
+import com.sunion.core.ble.mfr.entity.EventLog
+import com.sunion.core.ble.mfr.entity.GuidingCode
+import com.sunion.core.ble.mfr.entity.LockConfig
+import com.sunion.core.ble.mfr.entity.LockSetup
+import com.sunion.core.ble.mfr.entity.LockState
+import com.sunion.core.ble.mfr.entity.LockVersion
+import com.sunion.core.ble.mfr.entity.OTAStatus
+import com.sunion.core.ble.mfr.entity.OperatingSound
+import com.sunion.core.ble.mfr.entity.Password
+import com.sunion.core.ble.mfr.entity.PhoneticLanguage
+import com.sunion.core.ble.mfr.entity.RemotePinCode
+import com.sunion.core.ble.mfr.entity.SabbathMode
+import com.sunion.core.ble.mfr.entity.SecurityBolt
+import com.sunion.core.ble.mfr.entity.ShowFastTrackMode
+import com.sunion.core.ble.mfr.entity.SoundType
+import com.sunion.core.ble.mfr.entity.SoundValue
+import com.sunion.core.ble.mfr.entity.SupportPhoneticLanguage
+import com.sunion.core.ble.mfr.entity.TimeSetting
+import com.sunion.core.ble.mfr.entity.TwoFA
+import com.sunion.core.ble.mfr.entity.VacationMode
+import com.sunion.core.ble.mfr.entity.WeekDaySchedule
+import com.sunion.core.ble.mfr.entity.YearDaySchedule
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.copyOfRange
 import kotlin.random.Random
 
 @Singleton
@@ -160,7 +197,7 @@ class BleCmdRepository @Inject constructor(){
                 cmd(function, key, iv, 56, data)
             }
             0x07 -> {
-                cmd(function, key, iv, 11, data)
+                cmd(function, key, iv, 16, data)
             }
             0x08 -> {
                 cmd(function, key, iv, 128, data)

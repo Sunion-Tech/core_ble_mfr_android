@@ -16,10 +16,15 @@ import com.sunion.core.ble.mfr.toHexString
 import com.sunion.core.ble.mfr.toLittleEndianByteArrayInt16
 import com.sunion.core.ble.mfr.uIntStringToLittleEndianByteArray
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.rx2.asFlow
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -134,14 +139,51 @@ class LockUtilityUseCase @Inject constructor(
             .single()
     }
 
-    suspend fun setPublicUid(siteCode: String, uid: Int) = setUid(siteCode, uid, DoorType.Public.value)
-    suspend fun setPrivateUid(siteCode: String, uid: Int) = setUid(siteCode, uid, DoorType.Private.value)
+    suspend fun setPublicUid(
+        siteCode: String,
+        uid: Int,
+        startMinute: Int = 0,
+        endMinute: Int = 1439,
+        zone: Int = 0xFF
+    ) = setUid(
+        siteCode = siteCode,
+        uid = uid,
+        doorType = DoorType.Public.value,
+        startMinute = startMinute,
+        endMinute = endMinute,
+        zone = zone
+    )
 
-    private suspend fun setUid(siteCode: String, uid: Int, doorType: Int): Boolean {
+    suspend fun setPrivateUid(
+        siteCode: String,
+        uid: Int,
+        startMinute: Int = 0,
+        endMinute: Int = 1439,
+        zone: Int = 0xFF
+    ) = setUid(
+        siteCode = siteCode,
+        uid = uid,
+        doorType = DoorType.Private.value,
+        startMinute = startMinute,
+        endMinute = endMinute,
+        zone = zone
+    )
+
+    private suspend fun setUid(siteCode: String, uid: Int, doorType: Int, startMinute: Int, endMinute: Int, zone: Int = 0xFF): Boolean {
         if (!statefulConnection.isConnectedWithDevice()) throw NotConnectedException()
         val functionName = "setUid"
         val function = 0x07
-        val data = siteCode.uIntStringToLittleEndianByteArray() + uid.toLittleEndianByteArrayInt16() + doorType.toByte()
+
+        val safeStartMinute = startMinute.coerceIn(0, 1439)
+        val safeEndMinute = endMinute.coerceIn(0, 1439)
+
+        val data = siteCode.uIntStringToLittleEndianByteArray() +
+                uid.toLittleEndianByteArrayInt16() +
+                doorType.toByte() +
+                zone.toByte() +
+                safeStartMinute.toLittleEndianByteArrayInt16() +
+                safeEndMinute.toLittleEndianByteArrayInt16()
+
         val sendCmd = bleCmdRepository.createCommand(
             function = function,
             key = statefulConnection.keyTwo(),
