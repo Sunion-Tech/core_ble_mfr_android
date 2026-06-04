@@ -10,7 +10,12 @@ import com.sunion.core.ble.mfr.exception.LockStatusException
 import com.sunion.core.ble.mfr.exception.NotConnectedException
 import com.sunion.core.ble.mfr.isSupport
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -58,7 +63,7 @@ class LockConfig12UseCase @Inject constructor(
             .single()
     }
 
-    private suspend fun updateConfig(lockConfig12: LockConfig.Twelve): Boolean {
+    suspend fun updateConfig(lockConfig12: LockConfig.Twelve): Boolean {
         if (!statefulConnection.isConnectedWithDevice()) throw NotConnectedException()
         val functionName = ::updateConfig.name
         val function = 0x13
