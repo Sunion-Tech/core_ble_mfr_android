@@ -19,6 +19,16 @@ fun Byte.toBooleanList(list: MutableList<Boolean> = mutableListOf()): List<Boole
     return list
 }
 
+// MSB-first 版：flatten 後 list[n*8+k] 對應 byte n 的 bit(7-k)。
+// 用於 0x2B 黑名單佔用點陣圖——spec 每個 byte 內 bit 排序為 MSB→低位 slot (7 6 5 4 3 2 1 0)，
+// 需以此解碼，index 才正確對應 slot（toBooleanList 的 LSB-first 會在 byte 內錯位）。
+fun Byte.toBooleanListMsb(list: MutableList<Boolean> = mutableListOf()): List<Boolean> {
+    (7 downTo 0).forEach { bit ->
+        list.add((this.toInt() and (1 shl bit)) != 0)
+    }
+    return list
+}
+
 //ByteArray
 fun ByteArray.toHexPrint(): String {
     return joinToString(", ") { "%02X".format(it) }

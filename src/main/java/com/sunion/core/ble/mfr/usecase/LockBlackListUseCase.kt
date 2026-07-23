@@ -5,7 +5,7 @@ import com.sunion.core.ble.mfr.ReactiveStatefulConnection
 import com.sunion.core.ble.mfr.entity.BlackListDetail
 import com.sunion.core.ble.mfr.entity.Credential
 import com.sunion.core.ble.mfr.exception.NotConnectedException
-import com.sunion.core.ble.mfr.toBooleanList
+import com.sunion.core.ble.mfr.toBooleanListMsb
 import com.sunion.core.ble.mfr.toLittleEndianByteArrayInt16
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -47,8 +47,9 @@ class LockBlackListUseCase @Inject constructor(
                 ) as Credential.TwentyB
             }
             .map { decoded ->
+                // 0x2B 佔用點陣圖：以 MSB-first 解碼，list index 才正確對應 slot（見 toBooleanListMsb）。
                 val list = mutableListOf<Boolean>()
-                decoded.data.forEach { it.toBooleanList(list) }
+                decoded.data.forEach { it.toBooleanListMsb(list) }
                 list
             }
             .flowOn(Dispatchers.IO)
