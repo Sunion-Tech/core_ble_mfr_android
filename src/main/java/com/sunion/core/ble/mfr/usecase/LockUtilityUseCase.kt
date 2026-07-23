@@ -144,7 +144,7 @@ class LockUtilityUseCase @Inject constructor(
         uid: Int,
         startMinute: Int = 0,
         endMinute: Int = 1439,
-        zone: Int = 0xFF
+        zone: Int = 0x00
     ) = setUid(
         siteCode = siteCode,
         uid = uid,
@@ -159,7 +159,7 @@ class LockUtilityUseCase @Inject constructor(
         uid: Int,
         startMinute: Int = 0,
         endMinute: Int = 1439,
-        zone: Int = 0xFF
+        zone: Int = 0x00
     ) = setUid(
         siteCode = siteCode,
         uid = uid,
@@ -169,7 +169,7 @@ class LockUtilityUseCase @Inject constructor(
         zone = zone
     )
 
-    private suspend fun setUid(siteCode: String, uid: Int, doorType: Int, startMinute: Int, endMinute: Int, zone: Int = 0xFF): Boolean {
+    private suspend fun setUid(siteCode: String, uid: Int, doorType: Int, startMinute: Int, endMinute: Int, zone: Int = 0x00): Boolean {
         if (!statefulConnection.isConnectedWithDevice()) throw NotConnectedException()
         val functionName = "setUid"
         val function = 0x07
